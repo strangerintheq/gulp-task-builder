@@ -31,8 +31,7 @@ function TaskBuilder(name) {
 module.exports = TaskBuilder;
 
 TaskBuilder.prototype.src = function(path) {
-    var path = path || '';
-    this.addTask(plugins.gulp.src(this.srcUrl + path));
+    this.addTask(plugins.gulp.src(this.srcUrl + (path || '')));
     return this;
 };
 
