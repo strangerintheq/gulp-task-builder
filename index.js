@@ -15,14 +15,14 @@ var plugins = {
     stylus: require('gulp-stylus')
 };
 
-function TaskBuilder(name) {
+function TaskBuilder(name, cfg) {
     if (!name) {
         throw new Error('task must be named');
     }
     this.name = name;
-    this.srcUrl = './src/';
-    this.destUrl = '.';
-    this.tempUrl = './temp/';
+    this.srcUrl = cfg && cfg.src ? cfg.src : './src/';
+    this.destUrl = cfg && cfg.dest ? cfg.dest : '.';
+    this.tempUrl = cfg && cfg.temp ? cfg.temp :'./temp/';
     this.tasks = [];
     this.dependencies = [];
     this.plugins = plugins;
@@ -45,11 +45,8 @@ TaskBuilder.prototype.addTask = function(task) {
     return this;
 };
 
-TaskBuilder.prototype.browserify = function(url) {
-    return this.addTask(plugins.browserify(this.srcUrl + url).bundle());
-};
-
-TaskBuilder.prototype.source = function(filename) {
+TaskBuilder.prototype.browserify = function(url, filename) {
+    this.addTask(plugins.browserify(this.srcUrl + url).bundle());
     return this.addTask(plugins.source(filename));
 };
 
@@ -65,8 +62,8 @@ TaskBuilder.prototype.fileinclude = function() {
     return this.addTask(plugins.fileinclude());
 };
 
-TaskBuilder.prototype.dest = function() {
-    this.addTask(plugins.gulp.dest(this.destUrl));
+TaskBuilder.prototype.dest = function(url) {
+    this.addTask(plugins.gulp.dest(this.destUrl + (url ? url : '')));
     return this.pump();
 };
 
