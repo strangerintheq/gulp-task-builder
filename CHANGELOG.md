@@ -1,7 +1,9 @@
 # gulp task builder change log
 
-## master
+## 1.0.2
 
+- more configurable
+- browserify syntax simplified
 - added changelog
 
 ## 1.0.1
