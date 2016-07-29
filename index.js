@@ -76,8 +76,8 @@ TaskBuilder.prototype.fileinclude = function() {
     return this.addTask(plugins.fileinclude());
 };
 
-TaskBuilder.prototype.dest = function() {
-    this.addTask(plugins.gulp.dest(this.destUrl));
+TaskBuilder.prototype.dest = function(path) {
+    this.addTask(plugins.gulp.dest(path ? path : this.destUrl));
     return this.pump();
 };
 
