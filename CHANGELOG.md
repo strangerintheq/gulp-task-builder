@@ -1,6 +1,8 @@
 # gulp task builder change log
 
-## 1.0.4 - snapshot
+## 1.0.5 - webpack added
+
+## 1.0.4 - fileinclude dependency increased
 
 ## 1.0.3
 - dest arg added
