@@ -1,9 +1,13 @@
 # gulp task builder change log
 
-## 1.0.3 - current
+## 1.0.4 - snapshot
+
+## 1.0.3
+- dest arg added
+- src arrays added
+- browserify and vinyl replaced with webpack plugin
 
 ## 1.0.2
-
 - more configurable
 - browserify syntax simplified
 - added changelog

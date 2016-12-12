@@ -1,9 +1,7 @@
 var plugins = {
     gulp: require('gulp'),
     pump: require('pump'),
-    browserify: require('browserify'),
-    source: require('vinyl-source-stream'),
-    buffer: require('vinyl-buffer'),
+    webpack: require('webpack-stream'),
     concat: require('gulp-concat'),
     uglify: require('gulp-uglify'),
     concatCss: require('gulp-concat-css'),
@@ -15,14 +13,14 @@ var plugins = {
     stylus: require('gulp-stylus')
 };
 
-function TaskBuilder(name, cfg) {
+function TaskBuilder(name) {
     if (!name) {
         throw new Error('task must be named');
     }
     this.name = name;
-    this.srcUrl = cfg && cfg.src ? cfg.src : './src/';
-    this.destUrl = cfg && cfg.dest ? cfg.dest : '.';
-    this.tempUrl = cfg && cfg.temp ? cfg.temp :'./temp/';
+    this.srcUrl = './';
+    this.destUrl = './';
+    this.tempUrl = './temp/';
     this.tasks = [];
     this.dependencies = [];
     this.plugins = plugins;
@@ -31,7 +29,16 @@ function TaskBuilder(name, cfg) {
 module.exports = TaskBuilder;
 
 TaskBuilder.prototype.src = function(path) {
-    this.addTask(plugins.gulp.src(this.srcUrl + (path || '')));
+    var self = this;
+    var src;
+    if (typeof path == "string") {
+        src = self.srcUrl + (path || '');
+    } else {
+        src = path.map(function (src) {
+            return self.srcUrl + src;
+        });
+    }
+    this.addTask(plugins.gulp.src(src));
     return this;
 };
 
@@ -45,8 +52,15 @@ TaskBuilder.prototype.addTask = function(task) {
     return this;
 };
 
-TaskBuilder.prototype.browserify = function(url, filename) {
-    this.addTask(plugins.browserify(this.srcUrl + url).bundle());
+TaskBuilder.prototype.webpack = function(config) {
+    return this.addTask(plugins.webpack(typeof config == "string" ? {
+        output: {
+            filename: config
+        }
+    } : config));
+};
+
+TaskBuilder.prototype.source = function(filename) {
     return this.addTask(plugins.source(filename));
 };
 
@@ -62,8 +76,8 @@ TaskBuilder.prototype.fileinclude = function() {
     return this.addTask(plugins.fileinclude());
 };
 
-TaskBuilder.prototype.dest = function(url) {
-    this.addTask(plugins.gulp.dest(this.destUrl + (url ? url : '')));
+TaskBuilder.prototype.dest = function(path) {
+    this.addTask(plugins.gulp.dest(path ? path : this.destUrl));
     return this.pump();
 };
 
