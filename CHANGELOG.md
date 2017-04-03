@@ -1,9 +1,10 @@
 # gulp task builder change log
 
 ## 1.0.5 (current)
-- webpack added
 - api changes
 - browserify depsendencies removed
+- added empty lines remover
+- encapsulated all pluging
 
 ## 1.0.4
 - fileinclude dependency increased

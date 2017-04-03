@@ -14,10 +14,11 @@ var plugins = {
     concat: require('gulp-concat'),
     concatCss: require('gulp-concat-css'),
     minifyCss: require('gulp-cssnano'),
-    htmlmin: require("gulp-htmlmin"),
+    htmlMin: require("gulp-htmlmin"),
     rename: require("gulp-rename"),
-    webserver: require('gulp-webserver'),
-    fileinclude: require('gulp-file-include'),
+    webServer: require('gulp-webserver'),
+    fileInclude: require('gulp-file-include'),
+    removeEmptyLines: require('gulp-remove-empty-lines'),
     stylus: require('gulp-stylus')
 };
 
@@ -45,45 +46,42 @@ function createTaskBuilder(name) {
             core.pump(builder.tasks, callback);
         });
     };
-
     builder.depends = function(dependencies) {
         builder.dependencies = dependencies;
         return builder;
     };
-
     builder.subTask = function(task) {
         builder.tasks.push(task);
         return builder;
     };
-
     builder.src = function(path) {
         return builder.subTask(core.gulp.src(srcFromPath(path)));
+    };
+    builder.temp = function () {
+        return builder.subTask(core.gulp.dest(config.temp)).pump();
+    };
+    builder.dest = function(path) {
+        return builder.subTask(core.gulp.dest(path ? path : config.dest)).pump();
     };
 
     builder.webpack = function(c, uglify) {
         return builder.subTask(plugins.webpack(webpackConfig(c, uglify)));
     };
-
     builder.concatCss = function(filename) {
         return builder.subTask(plugins.concatCss(filename));
     };
-
-    builder.dest = function(path) {
-        return builder.subTask(core.gulp.dest(path ? path : config.dest)).pump();
-    };
-
     builder.fileinclude = function () {
         return builder.subTask(plugins.fileinclude());
     };
-
     builder.stylus = function() {
         return builder.subTask(plugins.stylus());
     };
-
-    builder.temp = function () {
-        return builder.subTask(core.gulp.dest(config.temp)).pump();
+    builder.removeEmptyLines = function() {
+        return builder.subTask(plugins.removeEmptyLines());
     };
-
+    builder.minifyCss = function() {
+        return builder.subTask(plugins.minifyCss());
+    };
     return builder;
 }
 
