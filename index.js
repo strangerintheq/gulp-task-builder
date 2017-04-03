@@ -1,9 +1,17 @@
-var plugins = {
+var config = {
+    src: './',
+    dest: './',
+    temp: './temp/'
+};
+
+var core = {
     gulp: require('gulp'),
-    pump: require('pump'),
+    pump: require('pump')
+};
+
+var plugins = {
     webpack: require('webpack-stream'),
     concat: require('gulp-concat'),
-    uglify: require('gulp-uglify'),
     concatCss: require('gulp-concat-css'),
     minifyCss: require('gulp-cssnano'),
     htmlmin: require("gulp-htmlmin"),
@@ -13,20 +21,29 @@ var plugins = {
     stylus: require('gulp-stylus')
 };
 
+module.exports = {
+
+    core: core,
+    plugins: plugins,
+    config: config,
+
+    task: function (name) {
+        return new TaskBuilder(name);
+    }
+};
+
 function TaskBuilder(name) {
     if (!name) {
         throw new Error('task must be named');
     }
     this.name = name;
-    this.srcUrl = './';
-    this.destUrl = './';
-    this.tempUrl = './temp/';
+    this.srcUrl = config.src;
+    this.destUrl = config.dest;
+    this.tempUrl = config.temp;
     this.tasks = [];
     this.dependencies = [];
-    this.plugins = plugins;
 }
 
-module.exports = TaskBuilder;
 
 TaskBuilder.prototype.src = function(path) {
     var self = this;
