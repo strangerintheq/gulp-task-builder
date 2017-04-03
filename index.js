@@ -40,7 +40,7 @@ function createTaskBuilder(name) {
         dependencies:[]
     };
 
-    builder.pump = function (builder) {
+    builder.pump = function () {
         return core.gulp.task(builder.name, builder.dependencies, function (callback) {
             core.pump(builder.tasks, callback);
         });
