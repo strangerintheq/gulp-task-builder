@@ -1,5 +1,5 @@
 var config = {
-    src: './',
+    src: './src/',
     dest: './bin/',
     temp: './temp/'
 };
@@ -63,12 +63,23 @@ function createTaskBuilder(name) {
         return builder;
     };
 
-    builder.webpack = function(config) {
-        return builder.subTask(plugins.webpack(typeof config == "string" ? {
+    builder.webpack = function(config, uglify) {
+
+        var cfg = typeof config == "string" ? {
+            entry: config,
             output: {
-                filename: config
+                filename: config.split("/").pop()
             }
-        } : config));
+        } : config;
+
+        if (uglify) {
+            if (!cfg.plugins) {
+                cfg.plugins = [];
+            }
+            cfg.plugins.push(new plugins.webpack.webpack.optimize.UglifyJsPlugin({ minimize: true }));
+        }
+
+        return builder.subTask(plugins.webpack(cfg));
     };
 
     builder.source = function(filename) {
