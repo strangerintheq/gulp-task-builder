@@ -1,6 +1,6 @@
 var config = {
     src: './',
-    dest: './',
+    dest: './bin/',
     temp: './temp/'
 };
 
@@ -22,102 +22,101 @@ var plugins = {
 };
 
 module.exports = {
-
     core: core,
     plugins: plugins,
     config: config,
-
-    task: function (name) {
-        return new TaskBuilder(name);
-    }
+    task: createTaskBuilder
 };
 
-function TaskBuilder(name) {
+function createTaskBuilder(name) {
+
     if (!name) {
         throw new Error('task must be named');
     }
-    this.name = name;
-    this.srcUrl = config.src;
-    this.destUrl = config.dest;
-    this.tempUrl = config.temp;
-    this.tasks = [];
-    this.dependencies = [];
+
+    var builder = {
+        name: name,
+        tasks: [],
+        dependencies:[]
+    };
+
+    builder.depends = function(dependencies) {
+        this.dependencies = dependencies;
+        return builder;
+    };
+
+    builder.subTask = function(task) {
+        builder.tasks.push(task);
+        return builder;
+    };
+
+    builder.src = function(path) {
+        var src;
+        if (typeof path == "string") {
+            src = config.src + (path || '');
+        } else {
+            src = path.map(function (src) {
+                return config.src + src;
+            });
+        }
+        builder.subTask(core.gulp.src(src));
+        return builder;
+    };
+
+    builder.webpack = function(config) {
+        return builder.subTask(plugins.webpack(typeof config == "string" ? {
+            output: {
+                filename: config
+            }
+        } : config));
+    };
+
+    builder.source = function(filename) {
+        return builder.subTask(plugins.source(filename));
+    };
+
+    builder.concatCss = function(filename) {
+        return builder.subTask(plugins.concatCss(filename));
+    };
+
+    builder.dest = function(path) {
+        builder.subTask(core.gulp.dest(path ? path : builder.config.dest));
+        return builder.pump();
+    };
+
+    builder.serve = function(fallback) {
+        builder.subTask(core.gulp.src('.'));
+        builder.subTask(plugins.webserver({
+            port: 80, fallback: fallback || 'index.html'
+        }));
+        return builder.pump();
+    };
+
+    builder.fileinclude = fileinclude.bind(null, builder);
+    builder.stylus = stylus.bind(null, builder);
+    builder.temp = temp.bind(null, builder);
+    builder.pump = pump.bind(null, builder);
 }
 
+function fileinclude(builder) {
+    return builder.subTask(plugins.fileinclude());
+}
 
-TaskBuilder.prototype.src = function(path) {
-    var self = this;
-    var src;
-    if (typeof path == "string") {
-        src = self.srcUrl + (path || '');
-    } else {
-        src = path.map(function (src) {
-            return self.srcUrl + src;
-        });
-    }
-    this.addTask(plugins.gulp.src(src));
-    return this;
-};
+function stylus(builder) {
+    return builder.subTask(plugins.stylus());
+}
 
-TaskBuilder.prototype.depends = function(dependencies) {
-    this.dependencies = dependencies;
-    return this;
-};
+function temp(builder) {
+    builder.subTask(core.gulp.dest(builder.config.temp));
+    return builder.pump();
+}
 
-TaskBuilder.prototype.addTask = function(task) {
-    this.tasks.push(task);
-    return this;
-};
-
-TaskBuilder.prototype.webpack = function(config) {
-    return this.addTask(plugins.webpack(typeof config == "string" ? {
-        output: {
-            filename: config
-        }
-    } : config));
-};
-
-TaskBuilder.prototype.source = function(filename) {
-    return this.addTask(plugins.source(filename));
-};
-
-TaskBuilder.prototype.stylus = function() {
-    return this.addTask(plugins.stylus());
-};
-
-TaskBuilder.prototype.concatCss = function(filename) {
-    return this.addTask(plugins.concatCss(filename));
-};
-
-TaskBuilder.prototype.fileinclude = function() {
-    return this.addTask(plugins.fileinclude());
-};
-
-TaskBuilder.prototype.dest = function(path) {
-    this.addTask(plugins.gulp.dest(path ? path : this.destUrl));
-    return this.pump();
-};
-
-TaskBuilder.prototype.temp = function() {
-    this.addTask(plugins.gulp.dest(this.tempUrl));
-    return this.pump();
-};
-
-TaskBuilder.prototype.serve = function(fallback) {
-    this.addTask(plugins.gulp.src('.'));
-    this.addTask(plugins.webserver({
-        port: 80, fallback: fallback || 'index.html'
-    }));
-    return this.pump();
-};
-
-TaskBuilder.prototype.pump = function(){
-    var tasks = this.tasks;
-    return plugins.gulp.task(
-        this.name,
-        this.dependencies,
+function pump(builder) {
+    return core.gulp.task(
+        builder.name,
+        builder.dependencies,
         function (cb) {
-            plugins.pump(tasks, cb);
+            core.pump(builder.tasks, cb);
         }
     );
-};
+}
