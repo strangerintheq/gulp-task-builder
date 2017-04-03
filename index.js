@@ -63,12 +63,12 @@ function createTaskBuilder(name) {
         return builder;
     };
 
-    builder.webpack = function(config, uglify) {
+    builder.webpack = function(c, uglify) {
 
-        var cfg = typeof config == "string" ? {
-            entry: config,
+        var cfg = typeof c == "string" ? {
+            entry: config.src + c,
             output: {
-                filename: config.split("/").pop()
+                filename: c.split("/").pop()
             }
         } : config;
 
@@ -92,14 +92,6 @@ function createTaskBuilder(name) {
 
     builder.dest = function(path) {
         builder.subTask(core.gulp.dest(path ? path : config.dest));
-        return builder.pump();
-    };
-
-    builder.serve = function(fallback) {
-        builder.subTask(core.gulp.src('.'));
-        builder.subTask(plugins.webserver({
-            port: 80, fallback: fallback || 'index.html'
-        }));
         return builder.pump();
     };
 
