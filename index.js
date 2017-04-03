@@ -80,7 +80,7 @@ function createTaskBuilder(name) {
     };
 
     builder.dest = function(path) {
-        builder.subTask(core.gulp.dest(path ? path : builder.config.dest));
+        builder.subTask(core.gulp.dest(path ? path : config.dest));
         return builder.pump();
     };
 
@@ -109,7 +109,7 @@ function stylus(builder) {
 }
 
 function temp(builder) {
-    builder.subTask(core.gulp.dest(builder.config.temp));
+    builder.subTask(core.gulp.dest(config.temp));
     return builder.pump();
 }
 
