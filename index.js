@@ -70,8 +70,8 @@ function createTaskBuilder(name) {
     builder.concatCss = function(filename) {
         return builder.subTask(plugins.concatCss(filename));
     };
-    builder.fileinclude = function () {
-        return builder.subTask(plugins.fileinclude());
+    builder.fileInclude = function () {
+        return builder.subTask(plugins.fileInclude());
     };
     builder.stylus = function() {
         return builder.subTask(plugins.stylus());
