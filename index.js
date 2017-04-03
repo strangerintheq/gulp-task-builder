@@ -40,8 +40,14 @@ function createTaskBuilder(name) {
         dependencies:[]
     };
 
+    builder.pump = function (builder) {
+        return core.gulp.task(builder.name, builder.dependencies, function (callback) {
+            core.pump(builder.tasks, callback);
+        });
+    };
+
     builder.depends = function(dependencies) {
-        this.dependencies = dependencies;
+        builder.dependencies = dependencies;
         return builder;
     };
 
@@ -51,39 +57,11 @@ function createTaskBuilder(name) {
     };
 
     builder.src = function(path) {
-        var src;
-        if (typeof path == "string") {
-            src = config.src + (path || '');
-        } else {
-            src = path.map(function (src) {
-                return config.src + src;
-            });
-        }
-        builder.subTask(core.gulp.src(src));
-        return builder;
+        return builder.subTask(core.gulp.src(srcFromPath(path)));
     };
 
     builder.webpack = function(c, uglify) {
-
-        var cfg = typeof c == "string" ? {
-            entry: config.src + c,
-            output: {
-                filename: c.split("/").pop()
-            }
-        } : config;
-
-        if (uglify) {
-            if (!cfg.plugins) {
-                cfg.plugins = [];
-            }
-            cfg.plugins.push(new plugins.webpack.webpack.optimize.UglifyJsPlugin({ minimize: true }));
-        }
-
-        return builder.subTask(plugins.webpack(cfg));
-    };
-
-    builder.source = function(filename) {
-        return builder.subTask(plugins.source(filename));
+        return builder.subTask(plugins.webpack(webpackConfig(c, uglify)));
     };
 
     builder.concatCss = function(filename) {
@@ -91,37 +69,49 @@ function createTaskBuilder(name) {
     };
 
     builder.dest = function(path) {
-        builder.subTask(core.gulp.dest(path ? path : config.dest));
-        return builder.pump();
+        return builder.subTask(core.gulp.dest(path ? path : config.dest)).pump();
     };
 
-    builder.fileinclude = fileinclude.bind(null, builder);
-    builder.stylus = stylus.bind(null, builder);
-    builder.temp = temp.bind(null, builder);
-    builder.pump = pump.bind(null, builder);
+    builder.fileinclude = function () {
+        return builder.subTask(plugins.fileinclude());
+    };
+
+    builder.stylus = function() {
+        return builder.subTask(plugins.stylus());
+    };
+
+    builder.temp = function () {
+        return builder.subTask(core.gulp.dest(config.temp)).pump();
+    };
 
     return builder;
 }
 
-function fileinclude(builder) {
-    return builder.subTask(plugins.fileinclude());
-}
+function webpackConfig(c, uglify) {
 
-function stylus(builder) {
-    return builder.subTask(plugins.stylus());
-}
-
-function temp(builder) {
-    builder.subTask(core.gulp.dest(config.temp));
-    return builder.pump();
-}
-
-function pump(builder) {
-    return core.gulp.task(
-        builder.name,
-        builder.dependencies,
-        function (cb) {
-            core.pump(builder.tasks, cb);
+    var cfg = typeof c == "string" ? {
+        entry: config.src + c,
+        output: {
+            filename: c.split("/").pop()
         }
-    );
+    } : config;
+
+    if (uglify) {
+        if (!cfg.plugins) {
+            cfg.plugins = [];
+        }
+        cfg.plugins.push(new plugins.webpack.webpack.optimize.UglifyJsPlugin({ minimize: true }));
+    }
+
+    return cfg;
+}
+
+function srcFromPath(path) {
+    if (typeof path == "string") {
+        return config.src + (path || '');
+    } else {
+        return path.map(function (src) {
+            return config.src + src;
+        });
+    }
 }
