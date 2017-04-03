@@ -96,6 +96,8 @@ function createTaskBuilder(name) {
     builder.stylus = stylus.bind(null, builder);
     builder.temp = temp.bind(null, builder);
     builder.pump = pump.bind(null, builder);
+
+    return builder;
 }
 
 function fileinclude(builder) {
