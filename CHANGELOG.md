@@ -5,6 +5,7 @@
 - browserify depsendencies removed
 - added empty lines remover
 - encapsulated all pluging
+- regex strip plugin added
 
 ## 1.0.4
 - fileinclude dependency increased
