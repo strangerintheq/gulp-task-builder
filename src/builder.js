@@ -65,8 +65,6 @@ function createTaskBuilder(name) {
     }
 }
 
-
-
 function srcFromPath (path) {
     if (typeof path === "string") {
         return config.src + (path || '');

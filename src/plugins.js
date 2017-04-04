@@ -16,7 +16,7 @@ module.exports = plugins;
 plugins.extend = function(builder) {
 
      builder.webpack = function(c, uglify) {
-         return builder.subTask(plugins.webpack(webpackConfig(c, uglify)));
+         return builder.subTask(plugins.webpack(webpackConfig(c, uglify, builder)));
      };
 
      builder.concatCss = function(filename) {
@@ -42,20 +42,22 @@ plugins.extend = function(builder) {
      return builder;
 };
 
-function webpackConfig(c, uglify) {
+function webpackConfig(c, uglify, builder) {
 
-    var cfg = typeof c == "string" ? {
-        entry: config.src + c,
+    var cfg = typeof c === "string" ? {
+        entry: builder.config.src + c,
         output: {
             filename: c.split("/").pop()
         }
-    } : config;
+    } : builder.config;
 
     if (uglify) {
         if (!cfg.plugins) {
             cfg.plugins = [];
         }
-        cfg.plugins.push(new plugins.webpack.webpack.optimize.UglifyJsPlugin({ minimize: true }));
+        cfg.plugins.push(new plugins.webpack.webpack.optimize.UglifyJsPlugin({
+            minimize: true
+        }));
     }
 
     return cfg;
