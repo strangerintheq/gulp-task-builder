@@ -8,7 +8,7 @@ var plugins = {
      webServer: require('gulp-webserver'),
      fileInclude: require('gulp-file-include'),
      removeEmptyLines: require('gulp-remove-empty-lines'),
-     stylus: require('gulp-stylus'),
+     stylus: require('gulp-stylus')
 };
 
 module.exports = plugins;
