@@ -2,9 +2,9 @@
 
 ## 1.0.5 (current)
 - api changes
-- browserify depsendencies removed
+- unused dependencies removed
 - added empty lines remover
-- encapsulated all pluging
+- encapsulated all plugins
 - regex strip plugin added
 
 ## 1.0.4
