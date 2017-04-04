@@ -25,6 +25,7 @@ function createTaskBuilder(name) {
     var tasks = [];
 
     var builder = {
+        config: config,
         subTask: subTask
     };
 
