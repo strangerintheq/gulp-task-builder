@@ -26,7 +26,7 @@ module.exports = function (regex, name) {
             file.contents = new Buffer(data);
             this.push(file);
             if (name) {
-                this.log("regex '" + name + "' occurrences removed: " + (arr.length - 1));
+                console.log("regex '" + name + "' occurrences removed: " + (arr.length - 1));
             }
         } catch (e) {
             this.emit('error', error(e));
