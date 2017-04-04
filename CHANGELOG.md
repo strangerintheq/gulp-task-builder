@@ -2,10 +2,10 @@
 
 ## 1.0.5 (current)
 - api changes
-- unused dependencies removed
-- added empty lines remover
 - encapsulated all plugins
+- added empty lines remover plugin
 - regex strip plugin added
+- unused dependencies removed
 
 ## 1.0.4
 - fileinclude dependency increased

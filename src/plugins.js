@@ -1,16 +1,16 @@
 'use strict';
 
 var plugins = {
-     webpack: require('webpack-stream'),
-     concat: require('gulp-concat'),
-     concatCss: require('gulp-concat-css'),
-     minifyCss: require('gulp-cssnano'),
-     htmlMin: require("gulp-htmlmin"),
-     rename: require("gulp-rename"),
-     webServer: require('gulp-webserver'),
-     fileInclude: require('gulp-file-include'),
-     removeEmptyLines: require('gulp-remove-empty-lines'),
-     stylus: require('gulp-stylus')
+    webpack: require('webpack-stream'),
+    concatCss: require('gulp-concat-css'),
+    minifyCss: require('gulp-cssnano'),
+    removeEmptyLines: require('gulp-remove-empty-lines'),
+    stylus: require('gulp-stylus'),
+    fileInclude: require('gulp-file-include'),
+    concat: require('gulp-concat'),
+    htmlMin: require("gulp-htmlmin"),
+    rename: require("gulp-rename"),
+    webServer: require('gulp-webserver')
 };
 
 module.exports = plugins;
@@ -21,25 +21,14 @@ plugins.extend = function(builder) {
          return builder.subTask(plugins.webpack(webpackConfig(c, uglify, builder)));
      };
 
-     builder.concatCss = function(filename) {
-         return builder.subTask(plugins.concatCss(filename));
-     };
-
-     builder.fileInclude = function () {
-         return builder.subTask(plugins.fileInclude());
-     };
-
-     builder.stylus = function() {
-         return builder.subTask(plugins.stylus());
-     };
-
-     builder.removeEmptyLines = function() {
-         return builder.subTask(plugins.removeEmptyLines());
-     };
-
-     builder.minifyCss = function() {
-         return builder.subTask(plugins.minifyCss());
-     };
+     for (var plugin in plugins) {
+         if (plugins.hasOwnProperty(plugin) && plugin !== 'webpack') {
+             var func = plugins[plugin];
+             builder[plugin] = function (settings) {
+                 return builder.subTask(func(settings));
+             }
+         }
+     }
 
      return builder;
 };
