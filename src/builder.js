@@ -53,7 +53,7 @@ function createTaskBuilder(name) {
         return subTask(custom(handler));
     };
 
-    return builder;
+    return plugins.extend(builder);
 
     function subTask(task) {
         tasks.push(task);
