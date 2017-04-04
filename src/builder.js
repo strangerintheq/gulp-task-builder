@@ -1,7 +1,9 @@
+'use strict';
+
 var gulp = require('gulp');
 var pump = require('pump');
 var plugins = require('./plugins');
-var custom = require('./custom');
+var regexStrip = require('./regex');
 
 var config = {
     src: './src/',
@@ -50,8 +52,8 @@ function createTaskBuilder(name) {
         return subTask(gulp.dest(path ? path : config.dest)).pump();
     };
 
-    builder.custom = function (handler) {
-        return subTask(custom(handler));
+    builder.regex = function (regex, name) {
+        return subTask(regexStrip(regex, name));
     };
 
     return plugins.extend(builder);

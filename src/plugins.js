@@ -1,3 +1,5 @@
+'use strict';
+
 var plugins = {
      webpack: require('webpack-stream'),
      concat: require('gulp-concat'),
