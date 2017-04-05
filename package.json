@@ -1,6 +1,6 @@
 {
   "name": "gulp-task-builder",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "gulp task builder with most common dependencies inside",
   "main": "src/builder.js",
   "author": "Stranger in the Q",
