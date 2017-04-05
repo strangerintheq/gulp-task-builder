@@ -1,6 +1,11 @@
 # gulp task builder change log
 
-## 1.0.5 (current)
+## 1.0.8 (current)
+
+## 1.0.7
+- fix version numbering
+
+## 1.0.6
 - api changes
 - encapsulated all plugins
 - added empty lines remover plugin
