@@ -10,15 +10,16 @@ var plugins = {
     concat: require('gulp-concat'),
     htmlMin: require("gulp-htmlmin"),
     rename: require("gulp-rename"),
-    webServer: require('gulp-webserver')
+    webServer: require('gulp-webserver'),
+    json: require('json-loader')
 };
 
 module.exports = plugins;
 
 plugins.extend = function (builder) {
 
-    builder.webpack = function (c, uglify) {
-        return builder.subTask(plugins.webpack(webpackConfig(c, uglify, builder)));
+    builder.webpack = function (c, uglify, isNode) {
+        return builder.subTask(plugins.webpack(webpackConfig(c, uglify, builder, isNode)));
     };
 
     builder.stylus = function () {
@@ -56,7 +57,7 @@ plugins.extend = function (builder) {
     return builder;
 };
 
-function webpackConfig(c, uglify, builder) {
+function webpackConfig(c, uglify, builder, isNode) {
 
     var cfg = typeof c === "string" ? {
         entry: builder.config.src + c,
@@ -73,6 +74,14 @@ function webpackConfig(c, uglify, builder) {
             minimize: true
         }));
     }
+    if (isNode){
+        cfg.target = 'node';
+        cfg.module= {loaders: [{
+            test: /\.json$/,
+            loader: 'json'
+        }]};
+    }
+
 
     return cfg;
 }

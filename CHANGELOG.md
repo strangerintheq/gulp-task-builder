@@ -1,6 +1,7 @@
 # gulp task builder change log
 
-## 1.0.8 (current)
+## 1.0.8 
+- added node webpack option and json loading
 
 ## 1.0.7
 - fix version numbering
